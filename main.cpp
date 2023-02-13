@@ -70,12 +70,14 @@ int getBalance(TreeNode * root) {
 
 TreeNode * insert(TreeNode * root, string name, int ufid) {
   if (root == NULL) {
+	cout << "successful" << endl;
     root = new TreeNode(name, ufid);
   } else if (ufid < root -> ufid) {
     root -> left = insert(root -> left, name, ufid);
   } else if (ufid > root -> ufid) {
     root -> right = insert(root -> right, name, ufid);
   } else {
+		cout << "unsuccessful" << endl;
     return root;
   }
   root -> height = 1 + max(getHeight(root -> left), getHeight(root -> right));
@@ -244,16 +246,16 @@ TreeNode * search(TreeNode * root, int ufid) {
   }
 }
 
-TreeNode * searchName(TreeNode * root, string name) {
+vector<string> searchName(TreeNode * root, string name, vector <string> & names) {
   if (root == NULL) {
-    return NULL;
-  } else if (name < root -> name) {
-    return searchName(root -> left, name);
-  } else if (name > root -> name) {
-    return searchName(root -> right, name);
-  } else {
-    return root;
+	return names;
   }
+  searchName(root -> left, name, names);
+  if (root -> name == name) {
+	names.push_back(to_string(root -> ufid));
+  }
+  searchName(root -> right, name, names);
+  return names;
 }
 
 bool checkInorder (string n)
@@ -318,7 +320,6 @@ int main() {
       if (checkName(name) && checkUFID(ufid) != -1) {
         ufidInt = checkUFID(ufid);
         root = (insert(root, name, ufidInt));
-        cout << "successful" << endl;
       } else {
         cout << "unsuccessful" << endl;
       }
@@ -334,11 +335,15 @@ int main() {
           cout << "unsuccessful" << endl;
         }
       } else if (checkName(ufidOrName.substr(1, ufidOrName.length() - 2))) {
-        if (searchName(root, ufidOrName.substr(1, ufidOrName.length() - 2)) != NULL) {
-          cout << searchName(root, ufidOrName.substr(1, ufidOrName.length() - 2)) -> ufid << endl;
+		names = searchName(root, ufidOrName.substr(1, ufidOrName.length() - 2), names);
+        if (names.empty() == false) {
+          for (int i = 0; i < names.size(); i++) {
+			  cout << names[i] << endl;
+		  }
         } else {
           cout << "unsuccessful" << endl;
         }
+		names.clear();
       }
     } else if (command == "printInorder") {
       printInorder(root, names);
