@@ -390,9 +390,10 @@ int main() {
       getline(in, name, '"');
       in >> ufid;
 
-		// printInorder(root, names);
-      // cout << "name: " << name << endl;
-      // cout << "ufid: " << ufid << endl;
+	  //the root is not changing
+
+    //   cout << "name: " << name << endl;
+    //   cout << "ufid: " << ufid << endl;
 
       if (checkName(name) && checkUFID(ufid) != -1) {
         ufidInt = checkUFID(ufid);
@@ -415,6 +416,7 @@ int main() {
         } else {
           cout << "unsuccessful" << endl;
         }
+
       } else if (checkName(ufidOrName.substr(1, ufidOrName.length() - 2))) {
 		names = searchName(root, ufidOrName.substr(1, ufidOrName.length() - 2), names);
         if (names.empty() == false) {
@@ -488,5 +490,7 @@ int main() {
     name = "";
     command = "";
     ufid = "";
+	ufidInt = 0;
+	n = "";
   }
 }
