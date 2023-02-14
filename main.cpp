@@ -54,46 +54,115 @@ TreeNode * rotateLeftRight(TreeNode * root) {
 
 int getHeight(TreeNode * root) {
   if (root == NULL) {
-    return -1;
+	return -1;
   } else {
-    return root -> height;
+	return root -> height;
   }
 }
 
 int getBalance(TreeNode * root) {
   if (root == NULL) {
+	cout << "Error: getBalance() called on NULL node." << endl;
     return 0;
   } else {
     return getHeight(root -> left) - getHeight(root -> right);
   }
 }
 
+TreeNode* updateHeight (TreeNode* root) {
+	if (root->left != NULL && root->right != NULL) {
+  		root -> height = max(getHeight(root -> left), getHeight(root -> right));
+	} else if (root->left != NULL) {
+		root -> height = 1 + getHeight(root -> left);
+	} else if (root->right != NULL) {
+		root -> height = 1 + getHeight(root -> right);
+	} else {
+		root -> height = 0;
+	}
+	return root;
+}
+
+
 TreeNode * insert(TreeNode * root, string name, int ufid) {
   if (root == NULL) {
 	cout << "successful" << endl;
     root = new TreeNode(name, ufid);
+    if (root == NULL) {
+      cout << "Error: Memory allocation failed." << endl;
+      return NULL;
+    }
   } else if (ufid < root -> ufid) {
     root -> left = insert(root -> left, name, ufid);
+    if (root -> left == NULL) {
+      cout << "Error: Insertion failed for the left child." << endl;
+      return root;
+    }
   } else if (ufid > root -> ufid) {
     root -> right = insert(root -> right, name, ufid);
+    if (root -> right == NULL) {
+      cout << "Error: Insertion failed for the right child." << endl;
+      return root;
+    }
   } else {
-		cout << "unsuccessful" << endl;
+    cout << "unsuccessful" << endl;
     return root;
   }
-  root -> height = 1 + max(getHeight(root -> left), getHeight(root -> right));
+
+  //update height
+	if (root->left != NULL && root->right != NULL) {
+  		root -> height = 1 + max(getHeight(root -> left), getHeight(root -> right));
+	} else if (root->left != NULL) {
+		root -> height = 1+ getHeight(root -> left);
+	} else if (root->right != NULL) {
+		root -> height = 1+ getHeight(root -> right);
+	} else {
+		root -> height = 0;
+	}
+	// cout << "Height of " << root->name << " is " << root->height << endl;
   int balance = getBalance(root);
-  if (balance > 1 && ufid < root -> left -> ufid) {
-    return rotateRight(root);
+
+  //TESTING
+//   cout << "Root is: "<< root->name <<" balance: " << balance << endl;
+//   if (root->left != NULL) {
+//   cout << "Left child is: "<< root->left->name <<" balance: " << getBalance(root->left) << endl;
+//   }
+//   if (root->right != NULL) {
+//   cout << "Right child is: "<< root->right->name <<" balance: " << getBalance(root->right) << endl;
+//   }
+
+  //if tree is right heavy
+  if (balance < -1) {
+	// cout << "right heavy" << endl;
+	//if right child is left heavy
+	if (getBalance(root -> right) > 1) {
+		// cout << "performing right left rotation" << endl << endl;
+	    root = rotateRightLeft(root);
+		root = updateHeight(root);
+		return root;
+	} else {
+		// cout << "performing left rotation" <<endl << endl;
+		root = rotateLeft(root);
+		root = updateHeight(root);
+		return root;
+	}
   }
-  if (balance < -1 && ufid > root -> right -> ufid) {
-    return rotateLeft(root);
-  }
-  if (balance > 1 && ufid > root -> left -> ufid) {
-    return rotateLeftRight(root);
-  }
-  if (balance < -1 && ufid < root -> right -> ufid) {
-    return rotateRightLeft(root);
-  }
+  //if tree is left heavy
+  	if (balance > 1) {
+		// cout << "left heavy" << endl;
+		//if left child is right heavy
+		if (getBalance(root -> left) < -1) {
+			// cout << "performing left right rotation" <<endl  << endl;
+			root = rotateLeftRight(root);
+			root = updateHeight(root);
+			return root;
+		} else {
+			// cout << "performing right rotation" <<endl  << endl;
+			root = rotateRight(root);
+			root = updateHeight(root);
+			// cout << "Height of " << root->name << " is " << root->height << endl;
+			return root;
+		}
+	}
   return root;
 }
 
@@ -204,8 +273,15 @@ void printPostorder(TreeNode * root, vector < string > & names) {
   names.push_back(root -> name);
 }
 
-void printLevelCount(TreeNode * root) {
-  cout << getHeight(root);
+void printLevelCount(TreeNode* root) {
+	// cout << "root is: " << root->name << endl;
+	// if (root->left != NULL) {
+	// 	cout << "Left child is: "<< root->left->name << endl;
+	// }
+	// if (root->right != NULL) {
+	// 	cout << "Right child is: "<< root->right->name << endl;
+	// }
+  cout << getHeight(root) << endl;
 }
 
 int checkUFID(string ufid) {
@@ -314,12 +390,17 @@ int main() {
       getline(in, name, '"');
       in >> ufid;
 
+		// printInorder(root, names);
       // cout << "name: " << name << endl;
       // cout << "ufid: " << ufid << endl;
 
       if (checkName(name) && checkUFID(ufid) != -1) {
         ufidInt = checkUFID(ufid);
-        root = (insert(root, name, ufidInt));
+		if (search(root, ufidInt) != NULL) {
+			cout << "unsuccessful" << endl;
+		} else {
+			root = (insert(root, name, ufidInt));
+		}
       } else {
         cout << "unsuccessful" << endl;
       }
@@ -388,16 +469,20 @@ int main() {
       }
     } else if (command == "removeInorder") {
       cin >> n;
-      if(checkInorder(n))
-        {
-            nInt = stoi(n);
-			cout << "root: " << root -> ufid << " name: " << root -> name << endl;
-            root = removeInorder(root, nInt);
-			cout << "root after call: " << root -> ufid << " name: " << root -> name << endl;
-        }
-        else
-            cout << "unsuccessful" << endl;
-    }
+	  if (root != NULL){
+		if(checkInorder(n))
+			{
+				nInt = stoi(n);
+				// cout << "root: " << root -> ufid << " name: " << root -> name << endl;
+				root = removeInorder(root, nInt);
+				// cout << "root after call: " << root -> ufid << " name: " << root -> name << endl;
+			}
+			else
+				cout << "unsuccessful" << endl;
+	  } else {
+		  cout << "unsuccessful" << endl;
+		}
+	}
     //resetting values
     ufidOrName = "";
     name = "";
