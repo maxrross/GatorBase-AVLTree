@@ -11,7 +11,7 @@
 using namespace std;
 
 int main() {
-//defining variables
+  //defining variables
   string command = "";
   string name = "";
   string line = "";
@@ -24,15 +24,15 @@ int main() {
   vector < string > names;
   AVLTree tree;
 
-//taking in number of commands
+  //taking in number of commands
   cin >> numcommands;
 
-//for loop to take in commands
+  //for loop to take in commands
   for (int i = 0; i < numcommands; i++) {
     cin >> command;
-	//insert function
+    //insert function
     if (command == "insert") {
-	//taking input for insert function, gets name and ufid
+      //taking input for insert function, gets name and ufid
       string space = "";
       getline(cin, line);
       istringstream in (line);
@@ -40,10 +40,10 @@ int main() {
       getline(in, name, '"');
       in >> ufid;
 
-	//if name and ufid are valid, insert into tree
+      //if name and ufid are valid, insert into tree
       if (tree.checkName(name) && tree.checkUFID(ufid) != -1) {
         ufidInt = tree.checkUFID(ufid);
-		//if the ufid is already in the tree, print unsuccessful, else insert it into tree
+        //if the ufid is already in the tree, print unsuccessful, else insert it into tree
         if (tree.search(tree.getRoot(), ufidInt) != NULL) {
           cout << "unsuccessful" << endl;
         } else {
@@ -52,84 +52,56 @@ int main() {
       } else {
         cout << "unsuccessful" << endl;
       }
-	  //search function
+      //search function
     } else if (command == "search") {
       cin >> ufidOrName;
       //finding out if UFID or Name
       if (tree.checkUFID(ufidOrName) != -1) {
         //ufid is an int
         ufidInt = tree.checkUFID(ufidOrName);
-		//if ufid is found in tree, print name, else print unsuccessful
+        //if ufid is found in tree, print name, else print unsuccessful
         if (tree.search(tree.getRoot(), ufidInt) != NULL) {
           cout << tree.search(tree.getRoot(), ufidInt) -> name << endl;
         } else {
           cout << "unsuccessful" << endl;
         }
-		//if ufid is a name, search for the name in the tree and store results in vector names
+        //if ufid is a name, search for the name in the tree and store results in vector names
       } else if (tree.checkName(ufidOrName.substr(1, ufidOrName.length() - 2))) {
-        names = tree.searchName(tree.getRoot(), ufidOrName.substr(1, ufidOrName.length() - 2), names);
-		//if we found the name, print the vector with the different ufids of the name, else print unsuccessful
-		//FYI names is now filled with UFID's of the name occurrences
-        if (names.empty() == false) {
-          for (int i = 0; i < names.size(); i++) {
-            cout << names[i] << endl;
-          }
-        } else {
-          cout << "unsuccessful" << endl;
-        }
-		//clearing the vector
-        names.clear();
+        tree.searchName(tree.getRoot(), ufidOrName.substr(1, ufidOrName.length() - 2));
       }
-	  //if command is print inorder, preorder, or postorder, call the respective function and print the vector, then clear the vector
+      //if command is print inorder, preorder, or postorder, call the respective function and print the vector, then clear the vector
     } else if (command == "printInorder") {
-      tree.printInorder(tree.getRoot(), names);
-      for (int i = 0; i < names.size(); i++) {
-        if (i == names.size() - 1) {
-          cout << names[i] << endl;
-        } else
-          cout << names[i] << ", ";
-      }
-      names.clear();
+      tree.printInorder(tree.getRoot());
     } else if (command == "printPreorder") {
-      tree.printPreorder(tree.getRoot(), names);
-      for (int i = 0; i < names.size(); i++) {
-        if (i == names.size() - 1) {
-          cout << names[i] << endl;
-        } else
-          cout << names[i] << ", ";
-      }
-      names.clear();
+      tree.printPreorder(tree.getRoot());
     } else if (command == "printPostorder") {
-      tree.printPostorder(tree.getRoot(), names);
-      for (int i = 0; i < names.size(); i++) {
-        if (i == names.size() - 1) {
-          cout << names[i] << endl;
-        } else
-          cout << names[i] << ", ";
-      }
-      names.clear();
-	  //printing the level count of the tree
+      tree.printPostorder(tree.getRoot());
+      //printing the level count of the tree
     } else if (command == "printLevelCount") {
       tree.printLevelCount(tree.getRoot());
-	  //remove function
+      //remove function
     } else if (command == "remove") {
-		//taking in ufid
+      //taking in ufid
       cin >> ufid;
-	  //if the ufid exists in the tree, remove it, else print unsuccessful
+      //if the ufid exists in the tree, remove it, else print unsuccessful
       if (tree.checkUFID(ufid) != -1) {
         ufidInt = tree.checkUFID(ufid);
-		//setting root to the new root after removing the node
-        tree.setRoot(tree.remove(tree.getRoot(), ufidInt));
-        cout << "successful" << endl;
+        if (tree.search(tree.getRoot(), ufidInt) == NULL) {
+          cout << "unsuccessful" << endl;
+        } else {
+          //setting root to the new root after removing the node
+          tree.setRoot(tree.remove(tree.getRoot(), ufidInt));
+          cout << "successful" << endl;
+        }
       } else {
         cout << "unsuccessful" << endl;
       }
     } else if (command == "removeInorder") {
-	//taking in the element number to remove, n
+      //taking in the element number to remove, n
       cin >> n;
-	  //if the tree has a root
+      //if the tree has a root
       if (tree.getRoot() != NULL) {
-		//if the element number is valid, remove the node, else print unsuccessful
+        //if the element number is valid, remove the node, else print unsuccessful
         if (tree.checkInorder(n)) {
           nInt = stoi(n);
           tree.setRoot(tree.removeInorder(tree.getRoot(), nInt));
@@ -138,6 +110,10 @@ int main() {
       } else {
         cout << "unsuccessful" << endl;
       }
+    } else {
+      getline(cin, line);
+      //if the command is not valid, print unsuccessful
+      cout << "unsuccessful" << endl;
     }
     //resetting values
     ufidOrName = "";
