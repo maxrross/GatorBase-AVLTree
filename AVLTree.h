@@ -167,8 +167,9 @@ TreeNode * AVLTree::remove(TreeNode * root, int ufid) {
     //if the node has two children, find the root's inorder successor, set the root's ufid and name to the inorder successor's ufid and name, then call remove function on the right of root with recursion
     else {
       TreeNode * successor = root -> right;
-      while (successor -> left != nullptr)
+      while (successor -> left != nullptr){
         successor = successor -> left;
+      }
       root -> ufid = successor -> ufid;
       root -> name = successor -> name;
       root -> right = remove(root -> right, successor -> ufid);
@@ -305,8 +306,10 @@ int AVLTree::getHeight(TreeNode * root) {
   if (root == nullptr) {
     return 0;
   } else {
-    int left = getHeight(root -> left);
-    int right = getHeight(root -> right);
+    int left = 0;
+    int right = 0;
+    left = getHeight(root -> left);
+    right = getHeight(root -> right);
     return 1 + max(left, right);
   }
 }
