@@ -1,1 +1,2 @@
-# avltree
+# GatorBase
+GatorBase is a command-line based C++ application that utilizes an AVL tree data structure for efficient storage and retrieval of student data, including names and UFID numbers. The application makes use of various AVL tree operations including rotation to maintain tree balance, as well as multiple traversal methods to perform operations like insertion, deletion, searching and printing of the student data. The tool ensures optimal time complexity and proper space utilization, and is capable of handling invalid command inputs gracefully, by providing a 'unsuccessful' response.
